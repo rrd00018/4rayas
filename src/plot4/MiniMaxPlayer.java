@@ -5,38 +5,62 @@
  */
 package plot4;
 
-/**
- *
- * @author José María Serrano
- * @version 1.7 Departamento de Informática. Universidad de Jáen 
- * Última revisión: 2023-03-30
- *
- * Inteligencia Artificial. 2º Curso. Grado en Ingeniería Informática
- *
- * Clase MiniMaxPlayer para representar al jugador CPU que usa una técnica de IA
- *
- * Esta clase es en la que tenemos que implementar y completar el algoritmo
- * MiniMax
- *
- */
-public class MiniMaxPlayer extends Player {
+import java.util.ArrayList;
 
-    /**
-     * @brief funcion que determina donde colocar la ficha este turno
-     * @param tablero Tablero de juego
-     * @param conecta Número de fichas consecutivas adyacentes necesarias para
-     * ganar
-     * @return Devuelve si ha ganado algun jugador
-     */
+public class MiniMaxPlayer extends Player {
+    void mostrar(Grid tablero){
+        int[][] mat=tablero.copyGrid();
+        for(int i=0; i<tablero.getFilas();i++){
+            for(int j=0; j<tablero.getColumnas(); j++){
+                if(mat[i][j]!=-1) System.out.print(" ");
+                System.out.print(mat[i][j]);
+                System.out.print(" ");
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+    }
+    boolean estaLleno(Grid tablero){
+        for(int i=0; i< tablero.getColumnas(); i++){
+            if(!tablero.fullColumn(i)){
+                return false;
+            }
+        }
+        return true;
+    }
+    void expandirArbolCompleto(Grid tablero, int jugador, int nivel){
+        if(tablero.checkWin() == -1){
+            System.out.println("Encontrado estado final, gana la IA, nivel " + nivel);
+            mostrar(tablero);
+        }
+        else if(tablero.checkWin() == 1){
+            System.out.println("Encontrado estado final, gana el HUMANO, nivel " + nivel);
+            mostrar(tablero);
+        } else if(estaLleno(tablero)){
+            System.out.println(("Encontrado estado final, lleno sin ganador"));
+        }else{
+            for(int i=0; i<tablero.getColumnas(); i++){
+                if(!tablero.fullColumn(i)){
+                    Grid hijo = new Grid(tablero);
+                    hijo.set(i,jugador);
+                    System.out.println("EXPANDIENDO...NIVEL-->" + nivel);
+                    if(jugador == 1){
+                        System.out.println("HUMANO VA A COLOCAR EN COLUMNA  " + i);
+                    }else{
+                        System.out.println("IA VA A COLOCAR EN COLUMNA " + i);
+                    }
+                    mostrar(tablero);
+                    expandirArbolCompleto(hijo,jugador*(-1),nivel+1);
+                }
+            }
+        }
+    }
     @Override
     public int turno(Grid tablero, int conecta) {
-
-        int posicion = getRandomColumn(tablero);
-        // to do
-
-        // ...
-        return posicion;
-
-    } // turno
+        int nivel=0;
+        int jugador=-1;
+        expandirArbolCompleto(tablero,jugador,nivel);
+        return getRandomColumn(tablero);
+    }
     
 } // MiniMaxPlayer

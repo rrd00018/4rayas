@@ -7,8 +7,8 @@ package plot4;
 /**
  *
  * @author José María Serrano
- * @version 1.7 Departamento de Informática. Universidad de Jáen
- * Última revisión: 2023-03-30
+ * @version 1.7 Departamento de Informática. Universidad de Jáen Última
+ * revisión: 2023-04-14
  *
  * Inteligencia Artificial. 2º Curso. Grado en Ingeniería Informática
  *
@@ -19,13 +19,13 @@ package plot4;
 public class Grid {
 
     // Tablero de juego como array de enteros
-    private final int[][] tablero;
+    protected final int[][] tablero;
     // Número de filas
-    private final int filas;
+    protected final int filas;
     // Número de columnas
-    private final int columnas;
+    protected final int columnas;
     // Número de fichas consecutivas para ganar
-    private final int conecta;
+    protected final int conecta;
 
     // Constructor
     public Grid(int f, int c, int s) {
@@ -36,6 +36,19 @@ public class Grid {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 tablero[i][j] = 0;
+            }
+        }
+    } // Grid
+
+    // Constructor 2 (copia)
+    public Grid(Grid original) {
+        filas = original.filas;
+        columnas = original.columnas;
+        tablero = new int[filas][columnas];
+        conecta = original.conecta;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                tablero[i][j] = original.tablero[i][j];
             }
         }
     } // Grid
@@ -240,8 +253,9 @@ public class Grid {
     public boolean fullColumn(int col) {
         int x = filas - 1;
         //Ir a la última posición de la columna	
-        while ((x >= 0) && (tablero[x][col] != Main.VACIO))
+        while ((x >= 0) && (tablero[x][col] != Main.VACIO)) {
             x--;
+        }
 
         // Si x < 0, columna completa
         return (x < 0);
@@ -255,13 +269,15 @@ public class Grid {
     public int topColumn(int col) {
         int x = filas - 1;
         //Ir a la última posición de la columna	
-        while ((x >= 0) && (tablero[x][col] != Main.VACIO))
+        while ((x >= 0) && (tablero[x][col] != Main.VACIO)) {
             x--;
+        }
 
-        if (x < 0)
+        if (x < 0) {
             return -2; // Error: La columna está completa
-        else
+        } else {
             return tablero[x][col];
+        }
 
     } // topColumn
 
@@ -270,12 +286,14 @@ public class Grid {
 
         int x = filas - 1;
         // Ir a la última posición de la columna	
-        while ((x >= 0) && (tablero[x][col] != 0))
+        while ((x >= 0) && (tablero[x][col] != 0)) {
             x--;
+        }
 
         // Si la columna no está llena, colocar la ficha
-        if (x >= 0)
+        if (x >= 0) {
             tablero[x][col] = jugador;
+        }
 
         return x;
 
@@ -287,10 +305,39 @@ public class Grid {
     // Main.PLAYER1 (1) : Celda con ficha del jugador 1
     // Main.PLAYER2 (-1) : Celda con ficha del jugador 2
     public int get(int x, int y) {
-        if (x >= 0 && x < filas && y >= 0 && y < columnas)
+        if (x >= 0 && x < filas && y >= 0 && y < columnas) {
             return tablero[x][y];
-        else // error: fuera de rango
+        } else // error: fuera de rango
+        {
             return -2;
+        }
     } // get
+
+    // Nuevo
+    // Imprime el tablero por pantalla
+    // Método para mostrar el estado actual del tablero por la salida estándar
+    public void print() {
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                System.out.print(tablero[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    } // print
+
+    // Nuevo
+    // Devuelve el número de fichas de un jugador ya colocadas en el tablero
+    public int getCount(int player) {
+        int count = 0;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if (tablero[i][j] == player) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    } // getCount
 
 } // Grid
