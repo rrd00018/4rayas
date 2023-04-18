@@ -4,6 +4,8 @@
  */
 package plot4;
 
+import java.util.Arrays;
+
 /**
  *
  * @author José María Serrano
@@ -340,4 +342,10 @@ public class Grid {
         return count;
     } // getCount
 
+    @Override
+    public String toString() {
+        return "Grid{" +
+                "tablero=" + Arrays.toString(tablero) +
+                '}';
+    }
 } // Grid
