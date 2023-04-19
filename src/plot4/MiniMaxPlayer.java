@@ -80,7 +80,6 @@ public class MiniMaxPlayer extends Player {
     }
     void expandirArbolCompleto(Integer padre, Grid tablero, int jugador, int nivel){
         if(tablero.checkWin() == -1){
-            //Nodo final gana la ia
         }
         else if(tablero.checkWin() == 1){
             //Nodo final gana el humano
@@ -103,7 +102,11 @@ public class MiniMaxPlayer extends Player {
     }
 
     int encontrarPadre(Pair<Integer,Grid> actual,int nivel){
-
+        if(nivel == 1){
+            return actual.first;
+        }else{
+            return encontrarPadre(tableroGenerado.get(nivel-1).get(actual.first),nivel-1);
+        }
     }
     @Override
     public int turno(Grid tablero, int conecta) {
@@ -113,15 +116,17 @@ public class MiniMaxPlayer extends Player {
         tableroGenerado.add(nivel0);
         int nivel=0;
         int jugador=-1;
+        int jugada = -9;
         expandirArbolCompleto(0,tablero,jugador,nivel);
         for(int i = 0; i < tableroGenerado.size(); i++) {
             for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
                 if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
-
+                    System.out.println("Entra en ganar");
+                    jugada = encontrarPadre(tableroGenerado.get(i).get(j),i);
                 }
             }
         }
-        return getRandomColumn(tablero);
+        return jugada;
     }
     
 } // MiniMaxPlayer
