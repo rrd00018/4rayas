@@ -87,7 +87,7 @@ public class MiniMaxPlayer extends Player {
         } else if(estaLleno(tablero)){
             //Nodo final empate
         }else{
-            if(tableroGenerado.get(nivel) == null){
+            if(tableroGenerado.size() == nivel){
                 tableroGenerado.add(new ArrayList<>());
             }
             for(int i=0; i<tablero.getColumnas(); i++){
@@ -101,18 +101,26 @@ public class MiniMaxPlayer extends Player {
             }
         }
     }
+
+    int encontrarPadre(Pair<Integer,Grid> actual,int nivel){
+
+    }
     @Override
     public int turno(Grid tablero, int conecta) {
         tableroGenerado = new ArrayList<>();
-        tableroGenerado.add(new ArrayList<>());
+        ArrayList<Pair<Integer,Grid>> nivel0 = new ArrayList<>();
+        nivel0.add(new Pair<>(0,tablero));
+        tableroGenerado.add(nivel0);
         int nivel=0;
         int jugador=-1;
         expandirArbolCompleto(0,tablero,jugador,nivel);
-       /* for(int i = 0; i < tableroGenerado.size(); i++) {
+        for(int i = 0; i < tableroGenerado.size(); i++) {
             for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
-                System.out.println(tableroGenerado.get(i).get(j).second);
+                if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
+
+                }
             }
-        }*/
+        }
         return getRandomColumn(tablero);
     }
     
