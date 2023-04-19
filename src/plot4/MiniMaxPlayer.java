@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class MiniMaxPlayer extends Player {
 
-    private final ArrayList<ArrayList<Pair<Integer,Grid>>> tableroGenerado = new ArrayList<>();
+    private ArrayList<ArrayList<Pair<Integer,Grid>>> tableroGenerado;
 
     static class Pair<U, V> {
 
@@ -80,40 +80,31 @@ public class MiniMaxPlayer extends Player {
     }
     void expandirArbolCompleto(Integer padre, Grid tablero, int jugador, int nivel){
         if(tablero.checkWin() == -1){
-            System.out.println("Encontrado estado final, gana la IA, nivel " + nivel);
-            mostrar(tablero);
-            //System.out.println(tablero);
-            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
+            //Nodo final gana la ia
         }
         else if(tablero.checkWin() == 1){
-            System.out.println("Encontrado estado final, gana el HUMANO, nivel " + nivel);
-            //System.out.println(tablero);
-            mostrar(tablero);
-            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
+            //Nodo final gana el humano
         } else if(estaLleno(tablero)){
-            System.out.println(("Encontrado estado final, lleno sin ganador"));
+            //Nodo final empate
         }else{
+            if(tableroGenerado.get(nivel) == null){
+                tableroGenerado.add(new ArrayList<>());
+            }
             for(int i=0; i<tablero.getColumnas(); i++){
                 if(!tablero.fullColumn(i)){
                     Grid hijo = new Grid(tablero);
                     hijo.set(i,jugador);
-                    System.out.println("EXPANDIENDO...NIVEL-->" + nivel);
-                    if(jugador == 1){
-                        System.out.println("HUMANO VA A COLOCAR EN COLUMNA  " + i);
-                    }else{
-                        System.out.println("IA VA A COLOCAR EN COLUMNA " + i);
-                    }
-                    mostrar(tablero);
-                    //System.out.println(tablero);
                     tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
-                    System.out.println(tableroGenerado.get(nivel).size()-1);
-                    expandirArbolCompleto(tableroGenerado.get(nivel).size(),hijo,jugador*(-1),nivel+1);
+                    //System.out.println(tableroGenerado.get(nivel).size()-1);
+                    expandirArbolCompleto(i,hijo,jugador*(-1),nivel+1);
                 }
             }
         }
     }
     @Override
     public int turno(Grid tablero, int conecta) {
+        tableroGenerado = new ArrayList<>();
+        tableroGenerado.add(new ArrayList<>());
         int nivel=0;
         int jugador=-1;
         expandirArbolCompleto(0,tablero,jugador,nivel);
