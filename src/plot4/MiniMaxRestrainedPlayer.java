@@ -22,6 +22,45 @@ package plot4;
  */
 public class MiniMaxRestrainedPlayer extends Player {
 
+   /* int heuristica(Grid tablero, int jugador){
+        int salida = 0,salida1 = 0, salida2 = 0;
+        salida += numCadenas(jugador,tablero,1);
+        salida1 += numCadenas(jugador,tablero,2) ;
+        salida2 += numCadenas(jugador,tablero,3);
+
+        return (salida*10 + salida1*100 +salida2*1000) * jugador;
+    }
+
+    int numCadenas(int turno, Grid tablero,int tam){
+        int cadenasH = cadenasHorizontales(turno,tablero,tam);
+        int cadenasV = cadenasVerticales(turno,tablero,tam);
+        int cadenasDA = cadenasDiagonalesAscendentes(turno,tablero,tam);
+        int cadenasDD = cadenasDiagonalesDescendentes(turno,tablero,tam);
+        return cadenasDD + cadenasDA + cadenasH + cadenasV;
+    }
+
+    int cadenasHorizontales(int turno, Grid tablero, int tam){
+        int[][] matriz = tablero.tablero;
+        int resultado = 0;
+        int seguidas = 0;
+        for(int i = 0; i < tablero.filas; i++){
+            for(int j = 0; j < tablero.columnas; j++){
+                if(matriz[i][j] == turno){
+                    if(j+1 < tablero.columnas ){
+                        if(matriz[i][j+1] == turno){
+                            //SI LA SIGUIENTE ES SE CUENTA SI LA SIGUIENTE SIGUIENTE NO
+                            seguidas++;
+                            if(!(j+2 < tablero.columnas)){
+                                if(matriz[i][j+2] != turno)
+                                    resultado++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+
     /**
      * @brief funcion que determina donde colocar la ficha este turno
      * @param tablero Tablero de juego

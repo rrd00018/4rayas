@@ -11,6 +11,7 @@ import java.util.Optional;
 public class MiniMaxPlayer extends Player {
 
     private ArrayList<ArrayList<Pair<Integer,Grid>>> tableroGenerado;
+    private Integer nivelActual = 1;
 
     static class Pair<U, V> {
 
@@ -79,21 +80,25 @@ public class MiniMaxPlayer extends Player {
         return true;
     }
     void expandirArbolCompleto(Integer padre, Grid tablero, int jugador, int nivel){
+        if(tableroGenerado.size() == nivel){
+            tableroGenerado.add(new ArrayList<>());
+        }
         if(tablero.checkWin() == -1){
+            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
         }
         else if(tablero.checkWin() == 1){
+            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
             //Nodo final gana el humano
         } else if(estaLleno(tablero)){
             //Nodo final empate
+            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
         }else{
-            if(tableroGenerado.size() == nivel){
-                tableroGenerado.add(new ArrayList<>());
-            }
             for(int i=0; i<tablero.getColumnas(); i++){
                 if(!tablero.fullColumn(i)){
                     Grid hijo = new Grid(tablero);
                     hijo.set(i,jugador);
                     tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
+                    //mostrar(hijo);
                     //System.out.println(tableroGenerado.get(nivel).size()-1);
                     expandirArbolCompleto(i,hijo,jugador*(-1),nivel+1);
                 }
@@ -101,9 +106,9 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
-    int encontrarPadre(Pair<Integer,Grid> actual,int nivel){
-        if(nivel == 1){
-            return actual.first;
+    Grid encontrarPadre(Pair<Integer,Grid> actual,int nivel){
+        if(nivel == nivelActual){
+            return actual.second;
         }else{
             return encontrarPadre(tableroGenerado.get(nivel-1).get(actual.first),nivel-1);
         }
@@ -114,19 +119,31 @@ public class MiniMaxPlayer extends Player {
         ArrayList<Pair<Integer,Grid>> nivel0 = new ArrayList<>();
         nivel0.add(new Pair<>(0,tablero));
         tableroGenerado.add(nivel0);
-        int nivel=0;
         int jugador=-1;
-        int jugada = -9;
+        Grid jugada = null;
+        int nivel = 0;
         expandirArbolCompleto(0,tablero,jugador,nivel);
+        System.out.println("-----------------------------------");
         for(int i = 0; i < tableroGenerado.size(); i++) {
             for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
                 if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
-                    System.out.println("Entra en ganar");
                     jugada = encontrarPadre(tableroGenerado.get(i).get(j),i);
+                    break;
+                }
+            }
+            if(jugada != null)
+                break;
+        }
+        mostrar(jugada);
+        nivelActual = nivelActual + 2;
+        for(int i = 0; i < tablero.filas; i++){
+            for(int j = 0; j < tablero.columnas; j++){
+                if(tablero.tablero[i][j] != jugada.tablero[i][j]){
+                    return j;
                 }
             }
         }
-        return jugada;
+        return -1;
     }
     
 } // MiniMaxPlayer
