@@ -5,6 +5,7 @@
  */
 package plot4;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -101,15 +102,17 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
-    int encontrarPadre(Pair<Integer,Grid> actual,int nivel){
+   /* int encontrarPadre(Pair<Integer,Grid> actual,int nivel){
         if(nivel == 1){
             return actual.first;
         }else{
             return encontrarPadre(tableroGenerado.get(nivel-1).get(actual.first),nivel-1);
         }
-    }
+
+    }*/
     @Override
     public int turno(Grid tablero, int conecta) {
+        crear_fichero();
         tableroGenerado = new ArrayList<>();
         ArrayList<Pair<Integer,Grid>> nivel0 = new ArrayList<>();
         nivel0.add(new Pair<>(0,tablero));
@@ -122,11 +125,34 @@ public class MiniMaxPlayer extends Player {
             for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
                 if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
                     System.out.println("Entra en ganar");
-                    jugada = encontrarPadre(tableroGenerado.get(i).get(j),i);
+                    //jugada = encontrarPadre(tableroGenerado.get(i).get(j),i);
                 }
             }
         }
         return jugada;
     }
-    
+
+    void crear_fichero(){
+        File fichero = new File ("C:\\Users\\josea\\Desktop\\IA\4enrayas.txt");
+
+
+        try {
+            // A partir del objeto File creamos el fichero físicamente
+            if (fichero.createNewFile())
+                System.out.println("El fichero se ha creado correctamente");
+            else
+                System.out.println("No ha podido ser creado el fichero");
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
 } // MiniMaxPlayer
+
+
+
+
+
+
+
+
+
