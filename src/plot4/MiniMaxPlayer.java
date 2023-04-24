@@ -5,6 +5,7 @@
  */
 package plot4;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -93,6 +94,9 @@ public class MiniMaxPlayer extends Player {
             //Nodo final empate
             tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
         }else{
+            if(tableroGenerado.size() == nivel){
+                tableroGenerado.add(new ArrayList<>());
+            }
             for(int i=0; i<tablero.getColumnas(); i++){
                 if(!tablero.fullColumn(i)){
                     Grid hijo = new Grid(tablero);
@@ -115,10 +119,12 @@ public class MiniMaxPlayer extends Player {
     }
     @Override
     public int turno(Grid tablero, int conecta) {
+        crear_fichero();
         tableroGenerado = new ArrayList<>();
         ArrayList<Pair<Integer,Grid>> nivel0 = new ArrayList<>();
         nivel0.add(new Pair<>(0,tablero));
         tableroGenerado.add(nivel0);
+        int nivel=0;
         int jugador=-1;
         Grid jugada = null;
         int nivel = 0;
@@ -145,5 +151,19 @@ public class MiniMaxPlayer extends Player {
         }
         return -1;
     }
-    
+
+    void crear_fichero(){
+        File fichero = new File ("C:\\Users\\josea\\Desktop\\IA\4enrayas.txt");
+
+
+        try {
+            // A partir del objeto File creamos el fichero físicamente
+            if (fichero.createNewFile())
+                System.out.println("El fichero se ha creado correctamente");
+            else
+                System.out.println("No ha podido ser creado el fichero");
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
 } // MiniMaxPlayer

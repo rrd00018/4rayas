@@ -23,6 +23,9 @@ package plot4;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.*;
 
 public class Main extends JFrame implements ActionListener {
 
@@ -87,7 +90,11 @@ public class Main extends JFrame implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent ae) {
-        // Eventos del menú Opciones
+
+    crear_fichero("C:\\Users\\josea\\Desktop\\IA\\4enrayas.txt");
+
+
+    // Eventos del menú Opciones
         if (ae.getSource() == p2h) {
             jugadorcpu = false; // Humano
             reset(); // El juego comienza de nuevo
@@ -158,10 +165,14 @@ public class Main extends JFrame implements ActionListener {
     // Método para actualizar el tablero por pantalla
     private void updateGrid() {
         System.out.println("Paso: " + movimiento);
-        for (int i = 0; i < FILAS; i++) {
-            for (int j = 0; j < COLUMNAS; j++) {
-                System.out.print(juego.get(i, j) + " ");
-                switch (juego.get(i, j)) {
+
+        //AQUI VA EL PRINT HIJO DE PUTA
+
+
+       for (int i = 0; i < FILAS; i++) {
+           // for (int j = 0; j < COLUMNAS; j++) {
+            //    System.out.print(juego.get(i, j) + " ");
+                rellenar_fichero(juego,"C:\\Users\\josea\\Desktop\\IA\\4enrayas");                switch (juego.get(i, j)) {
                     case PLAYER1:
                         tableroGUI[i][j].setIcon(ficha1);
                         break;
@@ -173,7 +184,7 @@ public class Main extends JFrame implements ActionListener {
                 }
             }
             System.out.println();
-        }
+    //    }
         System.out.println();
     } // repaint
 
@@ -267,6 +278,43 @@ public class Main extends JFrame implements ActionListener {
     }
 
     /**
+     * *Metodo que crea un fichero para despues rellenarlo
+     *
+     * @param localizacion del fichero a crear
+     */
+    private void crear_fichero(String localizacion){
+        File fichero = new File (localizacion);
+
+
+        try {
+            // A partir del objeto File creamos el fichero físicamente
+            if (fichero.createNewFile())
+                System.out.println("El fichero se ha creado correctamente");
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+    void rellenar_fichero(Grid tablero, String nombreArchivo){
+        int[][] mat=tablero.copyGrid();
+        try {
+            FileWriter writer = new FileWriter(nombreArchivo + ".txt", true);
+            for(int i=0; i<tablero.getFilas();i++){
+                for(int j=0; j<tablero.getColumnas(); j++){
+                    if(mat[i][j]!=-1) writer.write(" ");
+                    writer.write(String.valueOf(mat[i][j]));
+                    writer.write(" ");
+                }
+                writer.write("\n");
+            }
+            writer.write("\n");
+            writer.close();
+            System.out.println("Valores agregados exitosamente al archivo " + nombreArchivo + ".txt.");
+        } catch (IOException e) {
+            System.out.println("Error al escribir en el archivo " + nombreArchivo + ".txt");
+            e.printStackTrace();
+        }
+    }
+    /**
      * Configuración inicial
      *
      * Creación de la interfaz gráfica del juego
@@ -357,6 +405,7 @@ public class Main extends JFrame implements ActionListener {
         setTitle(title);
         setVisible(true);
         reset();
+
     } // run
 
     /**
@@ -366,7 +415,11 @@ public class Main extends JFrame implements ActionListener {
      *
      * @param args
      */
+
+
+
     public static void main(String[] args) {
+
         System.out.println("Plot4 - 4 en Raya");
         System.out.println("-----------------------------------------");
         System.out.println("Inteligencia Artificial - Curso 2022-23");

@@ -5,6 +5,10 @@
  */
 package plot4;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.*;
+
 /**
  *
  * @author José María Serrano
@@ -136,4 +140,9 @@ public class GreedyPlayer extends Player {
         return posicion;
     } // turno          
 
+
+
+
 } // GreedyPlayer
+
+
