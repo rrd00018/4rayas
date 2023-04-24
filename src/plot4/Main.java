@@ -91,8 +91,6 @@ public class Main extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
 
-    crear_fichero("C:\\Users\\josea\\Desktop\\IA\\4enrayas.txt");
-
 
     // Eventos del menú Opciones
         if (ae.getSource() == p2h) {
@@ -170,9 +168,9 @@ public class Main extends JFrame implements ActionListener {
 
 
        for (int i = 0; i < FILAS; i++) {
-           // for (int j = 0; j < COLUMNAS; j++) {
-            //    System.out.print(juego.get(i, j) + " ");
-                rellenar_fichero(juego,"C:\\Users\\josea\\Desktop\\IA\\4enrayas");                switch (juego.get(i, j)) {
+            for (int j = 0; j < COLUMNAS; j++) {
+                System.out.print(juego.get(i, j) + " ");
+           switch (juego.get(i, j)) {
                     case PLAYER1:
                         tableroGUI[i][j].setIcon(ficha1);
                         break;
@@ -184,7 +182,7 @@ public class Main extends JFrame implements ActionListener {
                 }
             }
             System.out.println();
-    //    }
+        }
         System.out.println();
     } // repaint
 
@@ -277,43 +275,7 @@ public class Main extends JFrame implements ActionListener {
         tablero[i][j].setBackground(col);
     }
 
-    /**
-     * *Metodo que crea un fichero para despues rellenarlo
-     *
-     * @param localizacion del fichero a crear
-     */
-    private void crear_fichero(String localizacion){
-        File fichero = new File (localizacion);
 
-
-        try {
-            // A partir del objeto File creamos el fichero físicamente
-            if (fichero.createNewFile())
-                System.out.println("El fichero se ha creado correctamente");
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
-    void rellenar_fichero(Grid tablero, String nombreArchivo){
-        int[][] mat=tablero.copyGrid();
-        try {
-            FileWriter writer = new FileWriter(nombreArchivo + ".txt", true);
-            for(int i=0; i<tablero.getFilas();i++){
-                for(int j=0; j<tablero.getColumnas(); j++){
-                    if(mat[i][j]!=-1) writer.write(" ");
-                    writer.write(String.valueOf(mat[i][j]));
-                    writer.write(" ");
-                }
-                writer.write("\n");
-            }
-            writer.write("\n");
-            writer.close();
-            System.out.println("Valores agregados exitosamente al archivo " + nombreArchivo + ".txt.");
-        } catch (IOException e) {
-            System.out.println("Error al escribir en el archivo " + nombreArchivo + ".txt");
-            e.printStackTrace();
-        }
-    }
     /**
      * Configuración inicial
      *
