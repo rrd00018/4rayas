@@ -164,9 +164,6 @@ public class Main extends JFrame implements ActionListener {
     private void updateGrid() {
         System.out.println("Paso: " + movimiento);
 
-        //AQUI VA EL PRINT HIJO DE PUTA
-
-
        for (int i = 0; i < FILAS; i++) {
             for (int j = 0; j < COLUMNAS; j++) {
                 System.out.print(juego.get(i, j) + " ");

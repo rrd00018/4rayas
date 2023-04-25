@@ -115,7 +115,7 @@ public class MiniMaxPlayer extends Player {
     }
 
     Grid encontrarPadre(Pair<Integer,Grid> actual,int nivel){
-        if(nivel == nivelActual){;
+        if(nivel == 1){
             return actual.second;
         }else{
             return encontrarPadre(tableroGenerado.get(nivel-1).get(actual.first),nivel-1);
@@ -133,22 +133,23 @@ public class MiniMaxPlayer extends Player {
         int nivel=0;
         int jugador=-1;
         Grid jugada = null;
+        expandirArbolCompleto(0, tablero, jugador, nivel);
         if(!arbolCreado) {
-            expandirArbolCompleto(0, tablero, jugador, nivel);
             //fichero();
             arbolCreado = true;
         }
-
 
         System.out.println("-----------------------------------");
         for(int i = 0; i < tableroGenerado.size(); i++) {
             for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
                 if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
                     mostrar(tableroGenerado.get(i).get(j).second); //Tablero ganador
+                    System.out.println("ENTRA AQUI");
                     jugada = encontrarPadre(tableroGenerado.get(i).get(j),i);
                     break;
                 }
             }
+            System.out.println("NIVEL " + i );
             if(jugada != null)
                 break;
         }
@@ -215,77 +216,6 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
-    public void escribirMatricesEnArchivo() {
-        try {
-            FileWriter writer = new FileWriter(nombreArchivo);
 
-            for (ArrayList<Pair<Integer, Grid>> listaMatrices : tableroGenerado) {
-
-                // Recorrer cada par de enteros y matriz en la lista de matrices actual
-                for (Pair<Integer, Grid> par : listaMatrices) {
-
-                    // Obtener la matriz actual y su número asociado
-                    Grid matriz = par.second;
-                    int numero = par.first;
-
-                    // Recorrer cada fila de la matriz actual
-                    for (int i = 0; i < matriz.getFilas(); i++) {
-
-                        // Recorrer cada columna de la matriz actual
-                        for (int j = 0; j < matriz.getColumnas(); j++) {
-
-                            // Escribir el valor actual de la matriz actual en el archivo
-                            writer.write(Integer.toString(matriz.getGrid()[i][j]) + " ");
-
-                        }
-
-                        // Si no es la última fila de la matriz actual, escribir un espacio
-                        if (i != matriz.getFilas() - 1) {
-                            writer.write("    ");
-                        }
-                    }
-
-                    // Si no es la última matriz de la lista de matrices actual, escribir un espacio
-                    if (numero != listaMatrices.size() - 1) {
-                        writer.write(" ");
-                    }
-                }
-
-                // Escribir una nueva línea al final de cada lista de matrices
-                writer.write("\n");
-
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Error al escribir en el archivo: " + e.getMessage());
-        }
-    }
-
-
-    public void escribirMatricesEnArchivo_2(String nombreArchivo) {
-        try {
-            FileWriter writer = new FileWriter(nombreArchivo);
-
-            int filasTotales = tableroGenerado.get(0).get(0).second.filas;
-            int columnasTotales = tableroGenerado.size() * tableroGenerado.get(0).get(0).second.columnas;
-
-            // Escribir cada fila de cada matriz en el archivo
-            for (int j = 0; j < tableroGenerado.size(); j++) {
-                    for (int k = 0; k < tableroGenerado.get(j).size(); k++) {
-                        for (int i = 0; i < filasTotales; i++){
-                        for (int l = 0; l < columnasTotales; l++) {
-                            //writer.write(tableroGenerado.get(j).get(k).second);
-                        }
-                    }
-                }
-                writer.write("\n"); // Agregar un salto de línea después de escribir cada fila
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Error al escribir en el archivo: " + e.getMessage());
-        }
-    }
 } // MiniMaxPlayer
 
