@@ -115,7 +115,7 @@ public class MiniMaxPlayer extends Player {
     }
 
     Grid encontrarPadre(Pair<Integer,Grid> actual,int nivel){
-        if(nivel == 1){
+        if(nivel == nivelActual){
             return actual.second;
         }else{
             return encontrarPadre(tableroGenerado.get(nivel-1).get(actual.first),nivel-1);
@@ -126,21 +126,23 @@ public class MiniMaxPlayer extends Player {
         /*if(fichero == null) {
             crear_fichero();
         }*/
-        tableroGenerado = new ArrayList<>();
-        ArrayList<Pair<Integer,Grid>> nivel0 = new ArrayList<>();
-        nivel0.add(new Pair<>(0,tablero));
-        tableroGenerado.add(nivel0);
+        if(!arbolCreado) {
+            tableroGenerado = new ArrayList<>();
+            ArrayList<Pair<Integer, Grid>> nivel0 = new ArrayList<>();
+            nivel0.add(new Pair<>(0, tablero));
+            tableroGenerado.add(nivel0);
+        }
         int nivel=0;
         int jugador=-1;
         Grid jugada = null;
-        expandirArbolCompleto(0, tablero, jugador, nivel);
         if(!arbolCreado) {
             //fichero();
             arbolCreado = true;
+            expandirArbolCompleto(0, tablero, jugador, nivel);
         }
 
         System.out.println("-----------------------------------");
-        for(int i = 0; i < tableroGenerado.size(); i++) {
+        for(int i = nivelActual; i < tableroGenerado.size(); i++) {
             for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
                 if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
                     mostrar(tableroGenerado.get(i).get(j).second); //Tablero ganador
@@ -210,7 +212,6 @@ public class MiniMaxPlayer extends Player {
                     rellenar_fichero(tableroGenerado.get(i).get(j).second,i);
                 }
             }
-
         } catch (IOException e) {
             System.out.println("Error al escribir en el archivo " + nombreArchivo);
         }
