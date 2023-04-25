@@ -54,10 +54,20 @@ public class MiniMaxRestrainedPlayer extends Player {
                            seguidas++;
                        }
                    }
+                   for(int k = 0; k < tam; k++){
+                       if(j-k >= 0){
+                           if(matriz[i][j-k] == turno){
+                               seguidas++;
+                           }else{
+                               break;
+                           }
+                       }
+                   }
                 }
-                if(seguidas == tam){
+                if(seguidas >= tam){
                     resultado++;
                 }
+                seguidas = 0;
             }
         }
         return resultado;
@@ -67,7 +77,95 @@ public class MiniMaxRestrainedPlayer extends Player {
         int[][] matriz = tablero.tablero;
         int resultado = 0;
         int seguidas = 0;
-        for(int i = 0; i <)
+        for(int i = 0; i < tablero.columnas; i++){
+            for(int j = 0; j < tablero.filas-tam; j++){
+                if(matriz[j][i] == turno){
+                    seguidas++;
+                    for(int k = 0; k < tam; k++){
+                        if(matriz[j+k][i] != turno){
+                            break;
+                        }else{
+                            seguidas++;
+                        }
+                    }
+                }
+                if(seguidas == tam){
+                    resultado++;
+                }
+                seguidas = 0;
+            }
+        }
+        return resultado;
+    }
+
+    int cadenasDiagonalesDescendentes(int turno, Grid tablero, int tam){
+        int[][] matriz = tablero.tablero;
+        int resultado = 0;
+        int seguidas = 0;
+        Boolean sale = false;
+        for(int i = 0; i < tablero.filas-tam; i++){
+            for(int j = 0; j < tablero.columnas-tam; j++){
+                if(matriz[i][j] == turno){
+                    seguidas++;
+                    for(int k = 0; k < tam; k++){
+                        for(int l = 0; l < tam; l++){
+                            if(matriz[i+k][j+l] == turno){
+                                seguidas++;
+                            }else {
+                                sale = true;
+                                break;
+                            }
+                        }
+                        if(sale){
+                            break;
+                        }
+                    }
+                }
+                sale = false;
+                if(seguidas == tam){
+                    resultado++;
+                }
+                seguidas = 0;
+            }
+        }
+        return resultado;
+    }
+
+    int cadenasDiagonalesAscendentes(int turno, Grid tablero, int tam){
+        int[][] matriz = tablero.tablero;
+        int resultado = 0;
+        int seguidas = 0;
+        Boolean sale = false;
+
+        for(int i = 0; i < tablero.filas-tam; i++){
+            for(int j = 0; j < tablero.columnas-tam; j++){
+                if(matriz[i][j] == turno){
+                    seguidas++;
+                    for(int k = tam; k > 0; k++){
+                        for(int l = 0; l < tam; l++){
+                            if(i-k > 0) {
+                                if (matriz[i - k][j + l] == turno) {
+                                    seguidas++;
+                                } else {
+                                    sale = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(sale){
+                            break;
+                        }
+                    }
+                }
+                sale = false;
+                if(seguidas == tam){
+                    resultado++;
+                }
+                seguidas = 0;
+            }
+        }
+
+        return resultado;
     }
 
     /**
