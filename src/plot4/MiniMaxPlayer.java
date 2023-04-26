@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class MiniMaxPlayer extends Player {
 
-    private ArrayList<ArrayList<Grid>> tableroGenerado;
+    private ArrayList<ArrayList<Grid>> arbol;
     private  File fichero = null;
     private final String nombreArchivo = "4enrayas.txt";
     private Boolean arbolMostrado = false;
@@ -28,32 +28,22 @@ public class MiniMaxPlayer extends Player {
         return true;
     }
     void generaArbol(Grid tablero, int jugador, int nivel){
-        //rellenar_fichero(tablero,nivel);
-        if(tableroGenerado.size() == nivel){
-            tableroGenerado.add(new ArrayList<>());
+        if(arbol.size() == nivel){
+            arbol.add(new ArrayList<>());
         }
-        if(tablero.checkWin() == -1){
-            tableroGenerado.get(nivel).add(tablero);
-        }
-        else if(tablero.checkWin() == 1){
-            tableroGenerado.get(nivel).add(tablero);
-            //Nodo final gana el humano
-        } else if(estaLleno(tablero)){
-            //Nodo final empate
-            tableroGenerado.get(nivel).add(tablero);
-        }else{
-            if(tableroGenerado.size() == nivel){
-                tableroGenerado.add(new ArrayList<>());
-            }
-            for(int i=0; i<tablero.getColumnas(); i++){
-                if(!tablero.fullColumn(i)){
+        if(tablero.checkWin() == 1 || tablero.checkWin() == -1 || estaLleno(tablero))
+            arbol.get(nivel).add(tablero);
+        else {
+            for (int i = 0; i < tablero.getColumnas(); i++) {
+                if (!tablero.fullColumn(i)) {
                     Grid hijo = new Grid(tablero);
-                    hijo.set(i,jugador);
-                    tableroGenerado.get(nivel).add(hijo);
-                    generaArbol(hijo,jugador*(-1),nivel+1);
+                    hijo.set(i, jugador);
+                    arbol.get(nivel).add(hijo);
+                    generaArbol(hijo, jugador * (-1), nivel + 1);
                 }
             }
         }
+
     }
 
     int min(Grid tablero, int nivel){
@@ -106,10 +96,10 @@ public class MiniMaxPlayer extends Player {
     public int turno(Grid tablero, int conecta) {
         if(!arbolMostrado) {
             //crear_fichero();
-            tableroGenerado = new ArrayList<>();
+            arbol = new ArrayList<>();
             ArrayList<Grid> nivel0 = new ArrayList<>();
             nivel0.add(tablero);
-            tableroGenerado.add(nivel0);
+            arbol.add(nivel0);
             generaArbol(tablero, -1, 0);
             //fichero();
             arbolMostrado = true;
@@ -163,10 +153,9 @@ public class MiniMaxPlayer extends Player {
     }
 
     void fichero(){
-            System.out.println(tableroGenerado.size());
-            for(int i = 0; i < tableroGenerado.size(); i++){ //Nivel
-                for(int j = 0; j < tableroGenerado.get(i).size(); j++){
-                    rellenar_fichero(tableroGenerado.get(i).get(j),i);
+            for(int i = 0; i < arbol.size(); i++){ //Nivel
+                for(int j = 0; j < arbol.get(i).size(); j++){
+                    rellenar_fichero(arbol.get(i).get(j),i);
                 }
             }
     }
