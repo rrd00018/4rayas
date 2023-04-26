@@ -7,74 +7,18 @@ package plot4;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Random;
 
 public class MiniMaxPlayer extends Player {
 
-    private ArrayList<ArrayList<Pair<Integer,Grid>>> tableroGenerado;
-    private Integer nivelActual = 1;
+    private ArrayList<ArrayList<Grid>> tableroGenerado;
     private  File fichero = null;
     private final String nombreArchivo = "4enrayas.txt";
-    private Boolean arbolCreado = false;
+    private Boolean arbolMostrado = false;
 
-    static class Pair<U, V> {
+    private Integer jugadaFinal;
+    private final Random aleatorio = new Random();
 
-        public final U first;       // el primer campo de un par
-        public final V second;      // el segundo campo de un par
-
-        // Construye un nuevo par con valores especificados
-        private Pair(U first, V second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        @Override
-        // Verifica que el objeto especificado sea "igual a" el objeto actual o no
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            Pair<?, ?> pair = (Pair<?, ?>) o;
-
-            // llamar al método `equals()` de los objetos subyacentes
-            if (!first.equals(pair.first)) {
-                return false;
-            }
-            return second.equals(pair.second);
-        }
-
-        @Override
-        // Calcula el código hash de un objeto para admitir tablas hash
-        public int hashCode() {
-            // usa códigos hash de los objetos subyacentes
-            return 31 * first.hashCode() + second.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return "(" + first + ", " + second + ")";
-        }
-
-
-    }
-
-    void mostrar(Grid tablero){
-        int[][] mat=tablero.copyGrid();
-        for(int i=0; i<tablero.getFilas();i++){
-            for(int j=0; j<tablero.getColumnas(); j++){
-                if(mat[i][j]!=-1) System.out.print(" ");
-                System.out.print(mat[i][j]);
-                System.out.print(" ");
-            }
-            System.out.println("");
-        }
-        System.out.println("");
-    }
     boolean estaLleno(Grid tablero){
         for(int i=0; i< tablero.getColumnas(); i++){
             if(!tablero.fullColumn(i)){
@@ -83,20 +27,20 @@ public class MiniMaxPlayer extends Player {
         }
         return true;
     }
-    void expandirArbolCompleto(Integer padre, Grid tablero, int jugador, int nivel){
+    void generaArbol(Grid tablero, int jugador, int nivel){
         //rellenar_fichero(tablero,nivel);
         if(tableroGenerado.size() == nivel){
             tableroGenerado.add(new ArrayList<>());
         }
         if(tablero.checkWin() == -1){
-            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
+            tableroGenerado.get(nivel).add(tablero);
         }
         else if(tablero.checkWin() == 1){
-            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
+            tableroGenerado.get(nivel).add(tablero);
             //Nodo final gana el humano
         } else if(estaLleno(tablero)){
             //Nodo final empate
-            tableroGenerado.get(nivel).add(new Pair<>(padre,tablero));
+            tableroGenerado.get(nivel).add(tablero);
         }else{
             if(tableroGenerado.size() == nivel){
                 tableroGenerado.add(new ArrayList<>());
@@ -105,65 +49,82 @@ public class MiniMaxPlayer extends Player {
                 if(!tablero.fullColumn(i)){
                     Grid hijo = new Grid(tablero);
                     hijo.set(i,jugador);
-                    tableroGenerado.get(nivel).add(new Pair<>(padre,hijo));
-                    //mostrar(hijo);
-                    //System.out.println(tableroGenerado.get(nivel).size()-1);
-                    expandirArbolCompleto(i,hijo,jugador*(-1),nivel+1);
+                    tableroGenerado.get(nivel).add(hijo);
+                    generaArbol(hijo,jugador*(-1),nivel+1);
                 }
             }
         }
     }
 
-    Grid encontrarPadre(Pair<Integer,Grid> actual,int nivel){
-        if(nivel == nivelActual){
-            return actual.second;
-        }else{
-            return encontrarPadre(tableroGenerado.get(nivel-1).get(actual.first),nivel-1);
+    int min(Grid tablero, int nivel){
+        if(tablero.checkWin() == -1){//Viene de jugar max, compruebo si es tablero ganador de la IA
+            return 100000;
+        }
+        else if(estaLleno(tablero)){//Si no es ganador, compruebo si está lleno
+            return 0;
+        }else{//Si no está lleno, coloco mi ficha en sus sitios posibles
+            int resultadoActual=100000;
+            for(int i=0; i<tablero.getColumnas(); i++){
+                if(!tablero.fullColumn(i)) {
+                    Grid hijo=new Grid(tablero);
+                    hijo.set(i, 1);
+                    int resultadoHijo = max(hijo, nivel + 1);
+                    if (resultadoHijo < resultadoActual) {
+                        resultadoActual = resultadoHijo;
+                    }
+                }
+            }
+            return resultadoActual;
         }
     }
+
+    int max(Grid tablero, int nivel){
+        if(tablero.checkWin() == 1){//Viene de jugar min, compruebo si es tablero ganador suyo, del HUMANO
+            return -100000;
+        }else if(estaLleno(tablero)){//En caso de no serlo, compruebo si está lleno
+            return 0;
+        }else{//Si no está lleno, coloco mis posibles jugadas y expando
+            int resultadoActual=-100000;
+            for(int i=0; i<tablero.getColumnas(); i++){
+                if(!tablero.fullColumn(i)) {
+                    Grid hijo=new Grid(tablero);
+                    hijo.set(i, -1);
+                    int resultadoHijo = min(hijo, nivel + 1);
+                    if (resultadoHijo > resultadoActual) {//Si la posible jugada "hijo" mejora, guardo el resultado
+                        resultadoActual = resultadoHijo;
+                        if (nivel == 1) {//Si estamos a nivel 1, guardo la jugada
+                            jugadaFinal = i;
+                        }
+                    }
+                }
+            }
+            return resultadoActual;
+        }
+    }
+
     @Override
     public int turno(Grid tablero, int conecta) {
-        /*if(fichero == null) {
-            crear_fichero();
-        }*/
-        if(!arbolCreado) {
+        if(!arbolMostrado) {
+            //crear_fichero();
             tableroGenerado = new ArrayList<>();
-            ArrayList<Pair<Integer, Grid>> nivel0 = new ArrayList<>();
-            nivel0.add(new Pair<>(0, tablero));
+            ArrayList<Grid> nivel0 = new ArrayList<>();
+            nivel0.add(tablero);
             tableroGenerado.add(nivel0);
-        }
-        int nivel=0;
-        int jugador=-1;
-        Grid jugada = null;
-        if(!arbolCreado) {
+            generaArbol(tablero, -1, 0);
             //fichero();
-            arbolCreado = true;
-            expandirArbolCompleto(0, tablero, jugador, nivel);
+            arbolMostrado = true;
         }
 
-        System.out.println("-----------------------------------");
-        for(int i = nivelActual; i < tableroGenerado.size(); i++) {
-            for(int j = 0;  j < tableroGenerado.get(i).size(); j++){
-                if((tableroGenerado.get(i).get(j).second).checkWin() == -1){
-                    mostrar(tableroGenerado.get(i).get(j).second); //Tablero ganador
-                    System.out.println("ENTRA AQUI");
-                    jugada = encontrarPadre(tableroGenerado.get(i).get(j),i);
-                    break;
-                }
+        jugadaFinal=-1;
+        max(tablero,1);
+        if(jugadaFinal == -1){
+            int salida = aleatorio.nextInt(0,3);
+            while(tablero.fullColumn(salida)){
+                salida = (salida + 1) % tablero.columnas;
             }
-            System.out.println("NIVEL " + i );
-            if(jugada != null)
-                break;
+            return salida;
         }
-        nivelActual = nivelActual + 2;
-        for(int i = 0; i < tablero.filas; i++){
-            for(int j = 0; j < tablero.columnas; j++){
-                if(tablero.tablero[i][j] != jugada.tablero[i][j]){
-                    return j;
-                }
-            }
-        }
-        return -1;
+        return jugadaFinal;
     }
 
     void crear_fichero(){
@@ -202,19 +163,12 @@ public class MiniMaxPlayer extends Player {
     }
 
     void fichero(){
-        try{
-            FileWriter writer = new FileWriter(nombreArchivo,true);
-            int filas = tableroGenerado.get(0).get(0).second.filas;
-            int columnas = tableroGenerado.get(0).get(0).second.columnas;
             System.out.println(tableroGenerado.size());
             for(int i = 0; i < tableroGenerado.size(); i++){ //Nivel
                 for(int j = 0; j < tableroGenerado.get(i).size(); j++){
-                    rellenar_fichero(tableroGenerado.get(i).get(j).second,i);
+                    rellenar_fichero(tableroGenerado.get(i).get(j),i);
                 }
             }
-        } catch (IOException e) {
-            System.out.println("Error al escribir en el archivo " + nombreArchivo);
-        }
     }
 
 

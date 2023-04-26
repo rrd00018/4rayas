@@ -22,7 +22,7 @@ package plot4;
  */
 public class MiniMaxRestrainedPlayer extends Player {
 
-    int heuristica(Grid tablero, int jugador){
+    /*int heuristica(Grid tablero, int jugador){
         int salida = 0,salida1 = 0, salida2 = 0;
         salida += numCadenas(jugador,tablero,1);
         salida1 += numCadenas(jugador,tablero,2) ;
@@ -166,7 +166,7 @@ public class MiniMaxRestrainedPlayer extends Player {
         }
 
         return resultado;
-    }
+    }*/
 
     /**
      * @brief funcion que determina donde colocar la ficha este turno
