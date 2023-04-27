@@ -19,6 +19,11 @@ public class MiniMaxPlayer extends Player {
     private Integer jugadaFinal;
     private final Random aleatorio = new Random();
 
+    /**
+     * @brief Comprueba si el tablero esta lleno o no
+     * @param tablero tablero a comprobar
+     * @return true si esta lleno y false sino
+     */
     boolean estaLleno(Grid tablero){
         for(int i=0; i< tablero.getColumnas(); i++){
             if(!tablero.fullColumn(i)){
@@ -27,6 +32,13 @@ public class MiniMaxPlayer extends Player {
         }
         return true;
     }
+
+    /**
+     * @brief Genera el árbol completo del juego
+     * @param tablero tablero a partir del cual se va a generar el arbol
+     * @param jugador jugador que tiene el turno
+     * @param nivel nivel actual
+     */
     void generaArbol(Grid tablero, int jugador, int nivel){
         if(arbol.size() == nivel){
             arbol.add(new ArrayList<>());
@@ -47,13 +59,13 @@ public class MiniMaxPlayer extends Player {
     }
 
     int min(Grid tablero, int nivel){
-        if(tablero.checkWin() == -1){//Viene de jugar max, compruebo si es tablero ganador de la IA
-            return 100000;
+        if(tablero.checkWin() == -1){
+            return Integer.MAX_VALUE;
         }
-        else if(estaLleno(tablero)){//Si no es ganador, compruebo si está lleno
+        else if(estaLleno(tablero)){
             return 0;
-        }else{//Si no está lleno, coloco mi ficha en sus sitios posibles
-            int resultadoActual=100000;
+        }else{
+            int resultadoActual=Integer.MAX_VALUE;
             for(int i=0; i<tablero.getColumnas(); i++){
                 if(!tablero.fullColumn(i)) {
                     Grid hijo=new Grid(tablero);
@@ -69,20 +81,20 @@ public class MiniMaxPlayer extends Player {
     }
 
     int max(Grid tablero, int nivel){
-        if(tablero.checkWin() == 1){//Viene de jugar min, compruebo si es tablero ganador suyo, del HUMANO
-            return -100000;
-        }else if(estaLleno(tablero)){//En caso de no serlo, compruebo si está lleno
+        if(tablero.checkWin() == 1){
+            return Integer.MIN_VALUE;
+        }else if(estaLleno(tablero)){
             return 0;
-        }else{//Si no está lleno, coloco mis posibles jugadas y expando
-            int resultadoActual=-100000;
+        }else{
+            int resultadoActual= Integer.MIN_VALUE;
             for(int i=0; i<tablero.getColumnas(); i++){
                 if(!tablero.fullColumn(i)) {
                     Grid hijo=new Grid(tablero);
                     hijo.set(i, -1);
                     int resultadoHijo = min(hijo, nivel + 1);
-                    if (resultadoHijo > resultadoActual) {//Si la posible jugada "hijo" mejora, guardo el resultado
+                    if (resultadoHijo > resultadoActual) {
                         resultadoActual = resultadoHijo;
-                        if (nivel == 1) {//Si estamos a nivel 1, guardo la jugada
+                        if (nivel == 1) {
                             jugadaFinal = i;
                         }
                     }
@@ -92,16 +104,22 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
+    /**
+     * @brief Se ejecuta cada vez que es el turno de la IA
+     * @param tablero Representación del tablero de juego
+     * @param conecta Número de fichas consecutivas para ganar
+     * @return Columna del tablero en la que se va a colocar la ficha
+     */
     @Override
     public int turno(Grid tablero, int conecta) {
         if(!arbolMostrado) {
-            //crear_fichero();
+            crear_fichero();
             arbol = new ArrayList<>();
             ArrayList<Grid> nivel0 = new ArrayList<>();
             nivel0.add(tablero);
             arbol.add(nivel0);
             generaArbol(tablero, -1, 0);
-            //fichero();
+            fichero();
             arbolMostrado = true;
         }
 
@@ -117,10 +135,12 @@ public class MiniMaxPlayer extends Player {
         return jugadaFinal;
     }
 
+    /**
+     * @brief Crea el fichero que va a contener la estructura
+     */
     void crear_fichero(){
         fichero = new File (nombreArchivo);
         try {
-            // A partir del objeto File creamos el fichero físicamente
             if (fichero.createNewFile())
                 System.out.println("El fichero se ha creado correctamente");
             else
@@ -130,6 +150,11 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
+    /**
+     * @brief Escribe el tablero en el fichero
+     * @param tablero tablero a escribir
+     * @param nivel nivel del tablero a imprimir
+     */
     void rellenar_fichero(Grid tablero,int nivel){
         int[][] mat=tablero.copyGrid();
         try {
@@ -152,8 +177,11 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
+    /**
+     * @brief Envia cada matriz de la estructura a escribirse en el fichero
+     */
     void fichero(){
-            for(int i = 0; i < arbol.size(); i++){ //Nivel
+            for(int i = 0; i < arbol.size(); i++){
                 for(int j = 0; j < arbol.get(i).size(); j++){
                     rellenar_fichero(arbol.get(i).get(j),i);
                 }
